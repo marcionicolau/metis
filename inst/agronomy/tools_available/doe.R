@@ -1,10 +1,10 @@
 # UI-elements for DOE.R
 
 # variable selection - CRD Analysis
-output$crd_var1 <- reactiveUI(function() {
+output$crd_depvar <- reactiveUI(function() {
   vars <- varnames()
   if(is.null(vars)) return()
-  selectInput(inputId = "crd_var1", label = "Select group or numeric variable:", choices = vars, selected = NULL, multiple = FALSE)
+  selectInput(inputId = "crd_depvar", label = "Select dependent variable:", choices = vars, selected = NULL, multiple = FALSE)
 })
 
 # variable selection - CRD Analysis
@@ -14,16 +14,11 @@ output$crd_var2 <- reactiveUI(function() {
   selectInput(inputId = "crd_var2", label = "Variables (select one):", choices = vars[-which(vars == input$crd_var1)], selected = NULL, multiple = TRUE)
 })
 
-# for alternative hypothesis
-alt <- list("Two sided" = "two.sided", "Less than" = "less", "Greater than" = "greater")
-
-
-
 ui_crdAnalysis <- function() {
   wellPanel(
     # tags$head(tags$style(type="text/css", "label.radio { display: inline-block; }", ".radio input[type=\"radio\"] { float: none; }")),
     # radioButtons(inputId = "cm_paired", label = "Test type:", c("Paired" = "paired", "Independent" = "independent"), selected = ""),
-    uiOutput("crd_var1"),
+    uiOutput("crd_depvar"),
     uiOutput("crd_var2"),
     conditionalPanel(condition = "input.analysistabs == 'Summary'",
                      # selectInput(inputId = "cm_alternative", label = "Alternative hypothesis", choices = alt, selected = "Two sided"),
@@ -46,7 +41,7 @@ summary.crdAnalysis <- function(result) {
 
 plot.crdAnalysis <- function(result) {
   
-  var1 <- input$crd_var1
+  var1 <- input$crd_depvar
   var2 <- input$crd_var2
   
   dat <- getdata()[,c(var1,var2)]
@@ -70,7 +65,7 @@ extra.crd <- function(result) {
 
 crdAnalysis <- reactive(function() {
   if(is.null(input$crd_var2)) return("Please select a variable")
-  var1 <- input$crd_var1
+  var1 <- input$crd_depvar
   var2 <- input$crd_var2
   dat <- getdata()[,c(var1,var2)]
   if(!is.factor(dat[,var1])) {
