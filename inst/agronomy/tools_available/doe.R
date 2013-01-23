@@ -8,10 +8,10 @@ output$crd_depvar <- reactiveUI(function() {
 })
 
 # variable selection - CRD Analysis
-output$crd_var2 <- reactiveUI(function() {
+output$crd_indepvar <- reactiveUI(function() {
   vars <- varnames()
   if(is.null(vars)) return()
-  selectInput(inputId = "crd_var2", label = "Variables (select one):", choices = vars[-which(vars == input$crd_var1)], selected = NULL, multiple = TRUE)
+  selectInput(inputId = "crd_indepvar", label = "Variables (select one):", choices = vars[-which(vars == input$crd_depvar)], selected = NULL, multiple = TRUE)
 })
 
 ui_crdAnalysis <- function() {
@@ -19,7 +19,7 @@ ui_crdAnalysis <- function() {
     # tags$head(tags$style(type="text/css", "label.radio { display: inline-block; }", ".radio input[type=\"radio\"] { float: none; }")),
     # radioButtons(inputId = "cm_paired", label = "Test type:", c("Paired" = "paired", "Independent" = "independent"), selected = ""),
     uiOutput("crd_depvar"),
-    uiOutput("crd_var2"),
+    uiOutput("crd_indepvar"),
     conditionalPanel(condition = "input.analysistabs == 'Summary'",
                      # selectInput(inputId = "cm_alternative", label = "Alternative hypothesis", choices = alt, selected = "Two sided"),
                      sliderInput('crd_sigLevel',"Significance level:", min = 0.85, max = 0.99, value = 0.95, step = 0.01)
@@ -42,7 +42,7 @@ summary.crdAnalysis <- function(result) {
 plot.crdAnalysis <- function(result) {
   
   var1 <- input$crd_depvar
-  var2 <- input$crd_var2
+  var2 <- input$crd_indepvar
   
   dat <- getdata()[,c(var1,var2)]
   
@@ -64,9 +64,9 @@ extra.crd <- function(result) {
 }
 
 crdAnalysis <- reactive(function() {
-  if(is.null(input$crd_var2)) return("Please select a variable")
+  if(is.null(input$crd_indepvar)) return("Please select a variable")
   var1 <- input$crd_depvar
-  var2 <- input$crd_var2
+  var2 <- input$crd_indepvar
   dat <- getdata()[,c(var1,var2)]
   if(!is.factor(dat[,var1])) {
     dat <- data.frame(cbind(as.factor(c(rep(var1,nrow(dat)),rep(var2,nrow(dat)))),c(dat)))
