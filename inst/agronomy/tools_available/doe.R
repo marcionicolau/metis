@@ -4,14 +4,17 @@
 output$crd_depvar <- reactiveUI(function() {
   vars <- varnames()
   if(is.null(vars)) return()
-  selectInput(inputId = "crd_depvar", label = "Select dependent variable:", choices = vars, selected = NULL, multiple = FALSE)
+  isFct <- sapply(getdata(), is.numeric)
+  vars <- vars[isFct]
+  selectInput(inputId = "crd_depvar", label = "Select response variable:", choices = vars, selected = NULL, multiple = FALSE)
 })
 
 # variable selection - CRD Analysis
 output$crd_indepvar <- reactiveUI(function() {
   vars <- varnames()
   if(is.null(vars)) return()
-  selectInput(inputId = "crd_indepvar", label = "Variables (select one):", choices = vars[-which(vars == input$crd_depvar)], selected = NULL, multiple = TRUE)
+  selectInput(inputId = "crd_indepvar", label = "Explanatory variables (select one or more):", 
+              choices = vars[-which(vars == input$crd_depvar)], selected = NULL, multiple = TRUE)
 })
 
 ui_crdAnalysis <- function() {
@@ -29,11 +32,13 @@ ui_crdAnalysis <- function() {
 
 summary.crdAnalysis <- function(result) {
   # if(class(result)[1] == "aov") {
+  cat("ANOVA Table\n\n")
   print(summary(result))
-  cat("\n")
+  cat("\nModel Table (means)\n\n")
   print(model.tables(result,"means"),digits=3) 
-  cat("\n")
+  cat("\nPost-Hoc Test (Tukey)\n\n")
   TukeyHSD(result, ordered = TRUE, conf.level = input$crd_sigLevel)
+
   # } else {
   # 	result
   # }
@@ -41,8 +46,8 @@ summary.crdAnalysis <- function(result) {
 
 plot.crdAnalysis <- function(result) {
   
-  var1 <- input$crd_depvar
-  var2 <- input$crd_indepvar
+  var1 <- input$crd_indepvar
+  var2 <- input$crd_depvar
   
   dat <- getdata()[,c(var1,var2)]
   
@@ -65,17 +70,17 @@ extra.crd <- function(result) {
 
 crdAnalysis <- reactive(function() {
   if(is.null(input$crd_indepvar)) return("Please select a variable")
-  var1 <- input$crd_depvar
-  var2 <- input$crd_indepvar
+  var1 <- input$crd_indepvar
+  var2 <- input$crd_depvar
+  
   dat <- getdata()[,c(var1,var2)]
-  if(!is.factor(dat[,var1])) {
-    dat <- data.frame(cbind(as.factor(c(rep(var1,nrow(dat)),rep(var2,nrow(dat)))),c(dat)))
-    # colnames(dat) <- c(var1,var2)
-    var1 <- "Numeric"
-    var2 <- "Factor"
-    colnames(dat) <- c(var1,var2)
+  nIsFact <- sapply(var1, function(v) !is.factor(dat[[v]]))
+  toFactor <- var1[nIsFact]
+
+  if(length(toFactor) > 0) {    
+    dat[,toFactor] <- lapply(toFactor, function(v) as.factor(dat[[v]]))
   }
   
-  formula <- as.formula(paste(var2[1], "~", var1))
+  formula <- as.formula(paste(var2, "~", paste(var1, collapse = " + ")))
   aov(formula, data = dat, conf.level = input$crd_sigLevel)
 })

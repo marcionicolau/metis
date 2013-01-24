@@ -1,3 +1,8 @@
+# avoid breaks in R-output print and show JSON packets transferred
+# over websockets
+# options(width = 150, shiny.trace=TRUE, error=traceback)
+options(width = 150, shiny.trace=TRUE)
+
 # loading list of data.frame in the car package
 listPackData <- function(packs) {
 	libnames <- c('')
@@ -11,7 +16,7 @@ listPackData <- function(packs) {
 	as.list(lib)
 }
 
-packDataSets <- listPackData(c('car'))
+packDataSets <- listPackData(c('car','MASS'))
 lastLoaded <- "" 		
 
 # Simulate a big data-file
