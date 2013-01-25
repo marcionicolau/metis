@@ -32,7 +32,7 @@ ui_crdAnalysis <- function() {
     checkboxInput(inputId = "crd_mcp", label = "MCP Tests", value = FALSE),
     conditionalPanel(condition = "input.analysistabs == 'Summary' && input.crd_mcp == true", 
                      uiOutput("crd_mcp_testvar"),
-                     sliderInput('crd_sigLevel',"Significance level:", min = 0.85, max = 0.99, value = 0.95, step = 0.01)
+                     sliderInput('crd_mcp_sigLevel',"Significance level:", min = 0.85, max = 0.99, value = 0.95, step = 0.01)
     )
   )
 }
@@ -94,7 +94,7 @@ crdAnalysis <- reactive(function() {
   }
   
   formula <- as.formula(paste(var2, "~", paste(var1, collapse = " + ")))
-  aov(formula, data = dat, conf.level = input$crd_sigLevel)
+  aov(formula, data = dat, conf.level = input$crd_mcp_sigLevel)
 })
 
 
@@ -117,54 +117,66 @@ output$crbd_indepvar <- reactiveUI(function() {
               selected = NULL, multiple = TRUE)
 })
 
+output$crbd_mcp_testvar <- reactiveUI(function() {
+  vars <- input$crd_indepvar
+  if(is.null(vars)) return()
+  selectInput(inputId = "crbd_mcp_testvar", label = "Variables to test:", choices = vars, selected = NULL, multiple = TRUE)
+})
 
 ui_crbdAnalysis <- function() {
   wellPanel(
     uiOutput("crd_depvar"),
     uiOutput("crbd_blockvar"),
     uiOutput("crbd_indepvar"),
-    conditionalPanel(condition = "input.analysistabs == 'Summary'",
-                     sliderInput('crd_sigLevel',"Significance level:", min = 0.85, max = 0.99, value = 0.95, step = 0.01)
+    checkboxInput(inputId = "crbd_mcp", label = "MCP Tests", value = FALSE),
+    conditionalPanel(condition = "input.analysistabs == 'Summary' && input.crbd_mcp == true", 
+                     uiOutput("crbd_mcp_testvar"),
+                     sliderInput('crbd_mcp_sigLevel',"Significance level:", min = 0.85, max = 0.99, value = 0.95, step = 0.01)
     )
   )
 }
 
 summary.crbdAnalysis <- function(result) {
-  # if(class(result)[1] == "aov") {
-  cat("ANOVA Table\n\n")
-  print(summary(result))
-  cat("\nModel Table (means)\n\n")
-  print(model.tables(result,"means"),digits=3) 
-  cat("\nPost-Hoc Test (Tukey)\n\n")
-  TukeyHSD(result, ordered = TRUE, conf.level = input$crd_sigLevel)
-  
-  # } else {
-  #   result
-  # }
+  print(anova(result))
+  if(input$crbd_mcp) {
+    cat("\n\n")
+    mcp.crbdAnalysis(result)
+  }
 }
 
 plot.crbdAnalysis <- function(result) {
-  
-  var1 <- input$crbd_indepvar
-  var2 <- input$crd_depvar
-  
-  dat <- getdata()[,c(var1,var2)]
-  
-  # dat[,var1] < as.factor(dat[,var1])
-  
-  plots <- list()
-  plots[["Boxplot"]] <- ggplot(dat, aes_string(x=var1, y=var2, fill=var1)) + 
-    geom_boxplot() + geom_jitter()
-  
-  plots[["Density"]] <- ggplot(dat, aes_string(x=var2, fill=var1)) +
-    geom_density(alpha=.3)
-  
-  print(do.call(grid.arrange, c(plots, list(ncol = 1))))
+  if(input$crbd_mcp && !is.null(input$crbd_mcp_testvar)) {
+    par(mfrow = c(3,2))
+    plot(result, ask = FALSE)
+    plot(result, which=4)
+    plot_mcp.crbdAnalysis(result)
+  } else {
+    par(mfrow = c(2,2))
+    plot(result, ask = FALSE)
+  }
 }
 
 extra.crbdAnalysis <- function(result) {
   # nothing here yet, could put in test variance equality
   cat("Under development\n")
+}
+
+mcp.crbdAnalysis <- function(result) {  
+  if(!is.null(input$crbd_mcp_testvar)) {
+    cat("\nPost-Hoc Test (Tukey)\n\n")
+    HSD.test(result, input$crbd_mcp_testvar, group=TRUE,alpha=input$crbd_mcp_sigLevel)
+  }  
+}
+
+plot_mcp.crbdAnalysis <- function(result) {
+  if(input$crbd_mcp && !is.null(input$crbd_mcp_testvar)) {
+    hsd <- HSD.test(result, input$crbd_mcp_testvar, group=TRUE,alpha=input$crbd_mcp_sigLevel)
+    yl <- c(0, max(hsd$means) * 1.1)
+    par(cex=1.2)
+    bar.group(hsd$groups, ylim = yl, col="blue")
+  } else {
+    cat("Please select at least one variable for MCP tests.\n")
+  }  
 }
 
 crbdAnalysis <- reactive(function() {
@@ -182,7 +194,7 @@ crbdAnalysis <- reactive(function() {
   }
   
   formula <- as.formula(paste(var2, "~", var3, " + ", paste(var1, collapse = " + ")))
-  aov(formula, data = dat, conf.level = input$crd_sigLevel)
+  aov(formula, data = dat, conf.level = input$crbd_mcp_sigLevel)
 })
 
 
