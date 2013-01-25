@@ -16,7 +16,7 @@ listPackData <- function(packs) {
 	as.list(lib)
 }
 
-packDataSets <- listPackData(c('car','MASS','datasets'))
+packDataSets <- listPackData(c('MASS','car'))
 lastLoaded <- "" 		
 
 # Simulate a big data-file
