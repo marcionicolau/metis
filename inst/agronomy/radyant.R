@@ -104,7 +104,7 @@ output$datasets <- reactiveUI(function() {
 	}
 
 	# Drop-down selection of data set
-	selectInput(inputId = "datasets", label = "Datasets:", choices = datasets, selected = datasets[1], multiple = FALSE)
+	selectInput(inputId = "datasets", label = "Active Dataset:", choices = datasets, selected = datasets[1], multiple = FALSE)
 })
 
 output$nrRows <- reactiveUI(function() {
