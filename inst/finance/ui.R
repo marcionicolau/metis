@@ -1,8 +1,8 @@
 shinyUI(
-
   pageWithSidebar(
 
     headerPanel("Radyant - Financial analytics using Shiny"),
+
     
     sidebarPanel(
 

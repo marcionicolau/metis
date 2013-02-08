@@ -10,14 +10,17 @@ License: GPL (>= 3)
 Depends: 
 	R (>= 2.15)
 Imports: 
-	shiny (>= 0.2.4), 
+	shiny (>= 0.3), 
 	car, 
-	foreign, 
 	tools, 
+	foreign, 
 	ggplot2, 
 	gridExtra,
-	reshape,
+	reshape2,
+	plyr,
 	markdown,
+	R.utils,
 	fGarch,
 	quantmod,
-	R.utils
+	psych,
+	arm

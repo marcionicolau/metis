@@ -7,39 +7,20 @@ Interactive data analytics using [R](http://www.r-project.org/) and [Shiny](http
 - Use knitr to log analysis output
 - Create help files
 - etc. etc.
-		
-<!-- ### To use the marketing app in the radyant package locally
-
-	install.packages('shiny')
-	install.packages('radyant', repos = c('http://vnijs.rady.ucsd.edu/site_media/R_packages/','http://cran.rtudio.com'))
-	library(shiny)
-	shiny::runApp(system.file('marketing',package='radyant'))
- -->
 
 ### Run the development version of the marketing app locally
 
-	install.packages('devtools')
-	library(devtools)
-	install_github('shiny', username = 'rstudio')
-	install_github('shiny-incubator', username = 'rstudio')
-	install_github('radyant', username = 'mostly-harmless')
-	library(shiny)
-	shiny::runApp(system.file('marketing',package='radyant'))
+- Required: [R](http://cran.rstudio.com/)
+- Required: A modern browser (e.g., Chrome, Firefox, or Safari). Internet Explorer is not supported.
+- Suggested: [Rstudio](http://www.rstudio.com/ide/download/)
 
-<!-- ### To use the development version of the finance app locally
+Start R(studio) and copy-and-paste the commands below:
 
-	install.packages('devtools')
-	library(devtools)
-	install_github('shiny', username = 'rstudio')
-	install_github('shiny-incubator', username = 'rstudio')
-	install_github('radyant', username = 'mostly-harmless')
-	library(shiny)
-	shiny::runApp(system.file('finance',package='radyant'))
+	install.packages('shiny', repos = "http://cran.rstudio.com")
+	shiny::runGitHub('radyant','mostly-harmless', subdir = 'inst/marketing')
 
- -->
- 
 ### License
 The radyant package is licensed under the GPLv3. See the files listed below for additional details.
 
-COPYING - radyant package license (GPLv3)
-NOTICE - Copyright notices for additional included software
+- COPYING - radyant package license (GPLv3)
+- NOTICE - Copyright notices for additional included software
