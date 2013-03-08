@@ -1,9 +1,9 @@
 [submodule "inst/agronomy"]
 	path = inst/agronomy
-	url = https://github.com/marcionicolau/swas-agronomy.git
+	url = https://github.com/marcionicolau/metis-agronomy.git
 [submodule "inst/finance"]
 	path = inst/finance
-	url = https://github.com/marcionicolau/swas-finance.git
+	url = https://github.com/marcionicolau/metis-finance.git
 [submodule "inst/marketing"]
 	path = inst/marketing
-	url = https://github.com/marcionicolau/swas-marketing.git
+	url = https://github.com/marcionicolau/metis-marketing.git
