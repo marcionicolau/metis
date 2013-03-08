@@ -1,0 +1,3 @@
+[submodule "inst/agronomy"]
+	path = inst/agronomy
+	url = https://github.com/marcionicolau/swas-agronomy.git
