@@ -4,3 +4,6 @@
 [submodule "inst/finance"]
 	path = inst/finance
 	url = https://github.com/marcionicolau/swas-finance.git
+[submodule "inst/marketing"]
+	path = inst/marketing
+	url = https://github.com/marcionicolau/swas-marketing.git
