@@ -75,7 +75,7 @@ loadPackData <- function(pFile) {
 # reactive functions used in radyant
 #################################################
 
-uploadfunc <- reactive(function() {
+uploadfunc <- reactive({
   if(input$upload == 0) return("")
   fpath <- try(file.choose(), silent = TRUE)
   if(is(fpath, 'try-error')) {
@@ -106,7 +106,7 @@ output$downloadData <- downloadHandler(
 )
 
 
-output$datasets <- reactiveUI(function() {
+output$datasets <- renderUI({
 
 	fpath <- uploadfunc()
 	# loading user data
@@ -123,16 +123,16 @@ output$datasets <- reactiveUI(function() {
 	selectInput(inputId = "datasets", label = "Datasets:", choices = datasets, selected = datasets[1], multiple = FALSE)
 })
 
-output$packData <- reactiveUI(function() {
+output$packData <- renderUI({
 	selectInput(inputId = "packData", label = "Load package data:", choices = packDataSets, selected = '', multiple = FALSE)
 })
 
-output$columns <- reactiveUI(function() {
+output$columns <- renderUI({
 	cols <- varnames()
 	selectInput("columns", "Select columns to show:", choices  = as.list(cols), selected = names(cols), multiple = TRUE)
 })
 
-output$nrRows <- reactiveUI(function() {
+output$nrRows <- renderUI({
 	if(is.null(input$datasets)) return()
 	dat <- getdata()
 
@@ -144,7 +144,7 @@ output$nrRows <- reactiveUI(function() {
 ################################################################
 # Data reactives - view, plot, transform data, and log your work
 ################################################################
-output$dataviewer <- reactiveTable(function() {
+output$dataviewer <- renderTable({
 	if(is.null(input$datasets) || is.null(input$columns)) return()
 
 	dat <- getdata()
@@ -194,56 +194,10 @@ output$dataviewer <- reactiveTable(function() {
 ################################################################
 
 ### Creating dynamic tabsets - From Alex Brown
-# output$graphBlock <- reactiveUI(function() {
-
-  # Construct HTML for the tabs.  Note there's no body, since I use a common SVG for
-  # all bodies.  You probably want a body.
-  # plotSpec is a list of plots I want.  it's a named list of lists, each member has a 'name' 
-  # property which is the title to print.
-
-  # panels <- Map(
-  #       function(plotName)tagList(h4(plotSpec[[plotName]]$name),div()),
-  #       reactiveVals$validPlots)
-
- # construct the tabs as an argument list
- # paneltags <- lapply(names(panels),
- #                         function(plotName)tabPanel(plotName,panels[[plotName]]))
- # paneltags$id <- "tabSelected" 
-
- #  # now build the tabs.
- #  Tabs=do.call(tabsetPanel,paneltags)
- #  return(Tabs)
-
-# example of using reactiveUI to control output - next 3 functions are not
-# used in the app
-output$summa <- reactiveUI(function() {
-
-	if(input$tool == 'singleMean') {
-  	# pre(id = "textreg", class = "shiny-text-output")
-		verbatimTextOutput("textreg")
-	} else if(input$tool == 'regression') {
-		tableOutput("tablereg")
-  	# div(id = "tablereg", class = "shiny-html-output")
-	}
-})
-
-output$textreg <- reactivePrint(function() {
-	x <- rnorm(100)
-	y <- 34 + 6*x + rnorm(100)
-
-	summary(lm(y ~ x))
-})
-
-output$tablereg <- reactiveTable(function() {
-	x <- rnorm(100)
-	y <- 34 + 6*x + rnorm(100)
-
-	summary(lm(y ~ x))
-})
 
 # Generate output for the summary tab
-# output$summary <- reactiveUI(function() {
-output$summary <- reactivePrint(function() {
+# output$summary <- renderUI(function() {
+output$summary <- renderPrint({
 	if(is.null(input$datasets) || input$tool == 'dataview') return()
 
 	# get the summary function for currenly selected tool and feed
@@ -260,7 +214,7 @@ output$summary <- reactivePrint(function() {
 })
 
 # Generate output for the plots tab
-output$plots <- reactivePlot(function() {
+output$plots <- renderPlot({
 
 	# plotting could be expensive so only done when tab is being viewed
 	if(input$tool == 'dataview' || input$analysistabs != 'Plots') return()

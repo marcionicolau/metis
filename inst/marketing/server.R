@@ -8,14 +8,14 @@ shinyServer(function(input, output) {
 	# print(flist)
 
 	# the 'grand' analysis ui-element caller
-	output$ui_analysis <- reactiveUI(function() {
+	output$ui_analysis <- renderUI({
   	if(input$tool == "dataview") return()
 	  get(paste('ui_',input$tool, sep=""))()
 	})
 
 	# the 'grand' data ui-element caller - only for transform for now
 	# not used yet - should all tools be separated out?
-	# output$ui_transform <- reactiveUI(function() {
+	# output$ui_transform <- renderUI(function() {
  	#  	if(input$tool != "dataview") return()
 	#   get(paste('ui_',input$datatabs, sep=""))()
 	# })
